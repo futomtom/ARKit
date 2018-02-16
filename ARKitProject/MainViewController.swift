@@ -318,7 +318,7 @@ class MainViewController: UIViewController {
 		let defaults = UserDefaults.standard
 
 		showDebugVisuals = defaults.bool(for: .debugMode)
-		toggleAmbientLightEstimation(defaults.bool(for: .ambientLightEstimation))
+		toggleAmbientLightEstimation(false)
 		dragOnInfinitePlanesEnabled = defaults.bool(for: .dragOnInfinitePlanes)
 		showHitTestAPIVisualization = defaults.bool(for: .showHitTestAPI)
 		use3DOFTracking	= defaults.bool(for: .use3DOFTracking)
@@ -685,6 +685,9 @@ extension MainViewController {
 		cameraToPosition.setMaximumLength(DEFAULT_DISTANCE_CAMERA_TO_OBJECTS)
 
 		object.position = cameraWorldPos + cameraToPosition
+
+        object.scale = SCNVector3(0.1,0.1,0.1)
+        object.runAction(SCNAction.scale(to: 1, duration: 0.5))
 
 		if object.parent == nil {
 			sceneView.scene.rootNode.addChildNode(object)

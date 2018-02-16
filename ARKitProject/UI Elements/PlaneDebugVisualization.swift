@@ -12,7 +12,7 @@ class PlaneDebugVisualization: SCNNode {
 
 		self.planeAnchor = anchor
 
-        let grid = UIImage(named: "Models.scnassets/plane_grid.png")
+        let grid = UIImage(named: "Dots")
 		self.planeGeometry = createPlane(size: CGSize(width: CGFloat(anchor.extent.x), height: CGFloat(anchor.extent.z)),
 		                                 contents: grid)
 		self.planeNode = SCNNode(geometry: planeGeometry)
@@ -20,8 +20,8 @@ class PlaneDebugVisualization: SCNNode {
 
 		super.init()
 
-		let originVisualizationNode = createAxesNode(quiverLength: 0.1, quiverThickness: 1.0)
-		self.addChildNode(originVisualizationNode)
+//		let originVisualizationNode = createAxesNode(quiverLength: 0.1, quiverThickness: 1.0)
+//		self.addChildNode(originVisualizationNode)
 		self.addChildNode(planeNode)
 
 		self.position = SCNVector3(anchor.center.x, -0.002, anchor.center.z) // 2 mm below the origin of plane.

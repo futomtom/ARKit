@@ -10,6 +10,7 @@ class VirtualObject: SCNNode {
 	var modelName: String = ""
 	var modelLoaded: Bool = false
 	var id: Int!
+    var circlePlaneNode:SCNNode?
 
 	var viewController: MainViewController?
 
@@ -31,6 +32,22 @@ class VirtualObject: SCNNode {
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+    
+    func addCirclePlane() {
+        if circlePlaneNode == nil {
+            let plane = SCNPlane(width: 1 , height: 1)
+            plane.firstMaterial?.diffuse.contents = UIImage(named: "circle")
+            plane.firstMaterial?.isDoubleSided = true
+            circlePlaneNode = SCNNode(geometry: plane)
+            circlePlaneNode?.rotation = SCNVector4(1.0, 0.0, 0.0, -Float.pi * 0.5)
+            circlePlaneNode?.castsShadow = false
+        }
+        addChildNode(circlePlaneNode!)
+    }
+    
+    func removeCirclePlane() {
+        circlePlaneNode?.removeFromParentNode()
+    }
 
 	func loadModel() {
 		guard let virtualObjectScene = SCNScene(named: "\(modelName).\(fileExtension)",

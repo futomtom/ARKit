@@ -104,6 +104,7 @@ class SingleFingerGesture: Gesture {
 	var hasMovedObject = false
 	var firstTouchWasOnObject = false
 	var dragOffset = CGPoint()
+    var circlePlaneNode:SCNNode?
 
 	override init(_ touches: Set<UITouch>, _ sceneView: ARSCNView, _ virtualObject: VirtualObject) {
 		super.init(touches, sceneView, virtualObject)
@@ -120,8 +121,11 @@ class SingleFingerGesture: Gesture {
 		for result in results {
 			if VirtualObject.isNodePartOfVirtualObject(result.node) {
 				firstTouchWasOnObject = true
+                virtualObject.addCirclePlane()
 				break
-			}
+            } else {
+                virtualObject.removeCirclePlane()
+            }
 		}
 	}
 
