@@ -40,17 +40,25 @@ class VirtualObjectsManager {
 
     func getHitObject(_ node:SCNNode) ->VirtualObject? {
         var selectObj:VirtualObject?
+        let name = node.name
         for obj in virtualObjects {
-            if obj.childNodes.contains(node) {
-                selectObj = obj
-                print("Hi")
-                selectObj!.addCirclePlane()
+            print("childCount = \(obj.childNodes.count)")
+            let nodes = obj.childNodes(passingTest: { child, _ in child == node })
+            if nodes.count > 0 {
+                obj.addCirclePlane()
+                virtualObjectSelected = obj
             } else {
-                print("oh")
-                obj.removeCirclePlane()
+                 obj.removeCirclePlane()
             }
         }
-         return selectObj
+         return virtualObjectSelected
+    }
+
+    func unselectObject() {
+        for obj in virtualObjects {
+                obj.removeCirclePlane()
+            }
+        virtualObjectSelected = nil 
     }
 
 	func removeVirtualObject(virtualObject: VirtualObject) {

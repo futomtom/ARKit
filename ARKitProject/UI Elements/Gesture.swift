@@ -1,6 +1,11 @@
 import Foundation
 import ARKit
 
+protocol GestureDelegate:class {
+    func updateSelectedStatus(_ status:Bool)
+
+}
+
 @available(iOS 11, *)
 class Gesture {
 
@@ -14,6 +19,7 @@ class Gesture {
 	var currentTouches = Set<UITouch>()
 	let sceneView: ARSCNView
 	let virtualObject: VirtualObject
+    weak var delegate:GestureDelegate?
 
 	var refreshTimer: Timer?
 
@@ -120,15 +126,29 @@ class SingleFingerGesture: Gesture {
 		var hitTestOptions = [SCNHitTestOption: Any]()
 		hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
 		let results: [SCNHitTestResult] = sceneView.hitTest(initialTouchLocation, options: hitTestOptions)
+        print("count = \(results.count)")
+        var node = results.first?.node
+//        if node != nil {
+//            repeat {
+//                if node!.parent != nil {
+//                    node = node!.parent
+//                    print( node!.name)
+//                }
+//            } while (node != nil)
+//        }
 
         if results.first != nil {
             let selectedVirtualObject = VirtualObjectsManager.shared.getHitObject((results.first?.node)!)
             if selectedVirtualObject != nil {
                 firstTouchWasOnObject = true
+                delegate?.updateSelectedStatus(true)
             } else {
                 firstTouchWasOnObject = false
+                delegate?.updateSelectedStatus(false)
             }
-
+        } else {
+            print("no hit")
+            VirtualObjectsManager.shared.unselectObject() 
         }
 	}
 

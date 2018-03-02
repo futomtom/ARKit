@@ -53,6 +53,7 @@ class VirtualObject: SCNNode {
     }
     
     func removeCirclePlane() {
+        print(#function)
         circlePlaneNode?.removeFromParentNode()
     }
 

@@ -247,21 +247,21 @@ class ARFurnitureViewController: UIViewController {
      //   textManager.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, ARMessageType: .focusSquare)
     }
     
-    func updateFocusSquare() {
-        guard let screenCenter = screenCenter else { return }
-        
-        let virtualObject = VirtualObjectsManager.shared.getVirtualObjectSelected()
-        if virtualObject != nil && sceneView.isNode(virtualObject!, insideFrustumOf: sceneView.pointOfView!) {
-            focusSquare?.hide()
-        } else {
-            focusSquare?.unhide()
-        }
-        let (worldPos, planeAnchor, _) = worldPositionFromScreenPosition(screenCenter, objectPos: focusSquare?.position)
-        if let worldPos = worldPos {
-            focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
-           
-        }
-    }
+//    func updateFocusSquare() {
+//        guard let screenCenter = screenCenter else { return }
+//
+//        let selectedObject = VirtualObjectsManager.shared.getVirtualObjectSelected()
+//        if selectedObject != nil && sceneView.isNode(virtualObject!, insideFrustumOf: sceneView.pointOfView!) {
+//            focusSquare?.hide()
+//        } else {
+//            focusSquare?.unhide()
+//        }
+//        let (worldPos, planeAnchor, _) = worldPositionFromScreenPosition(screenCenter, objectPos: focusSquare?.position)
+//        if let worldPos = worldPos {
+//            focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
+//
+//        }
+//    }
 
     
     // MARK: - Debug Visualizations
@@ -336,8 +336,8 @@ class ARFurnitureViewController: UIViewController {
         
          DispatchQueue.main.async {
         UIView.animate(withDuration: 0.5, animations: {
-            self.deleteButton.transform = CGAffineTransform(translationX: 0, y: 150)
-            self.captureButton.transform = CGAffineTransform(translationX: 0, y: 150)
+            self.deleteButton.isHidden = true
+            self.captureButton.isHidden = true
             self.addObjectButton.isHidden = false
         })
         }
@@ -358,6 +358,7 @@ class ARFurnitureViewController: UIViewController {
   
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+
         guard let object = VirtualObjectsManager.shared.getVirtualObjectSelected() else {
             return
         }
@@ -380,10 +381,7 @@ class ARFurnitureViewController: UIViewController {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if !VirtualObjectsManager.shared.isAVirtualObjectPlaced() {
-            chooseObject(addObjectButton)
-            return
-        }
+  
         
         currentGesture = currentGesture?.updateGestureFromTouches(touches, .touchEnded)
     }
@@ -479,6 +477,7 @@ extension ARFurnitureViewController :VirtualObjectSelectionViewControllerDelegat
     }
     
     func loadVirtualObject(object: VirtualObject) {
+        print(#function)
         // Show progress indicator
 //        let spinner = UIActivityIndicatorView()
 //        spinner.center = addObjectButton.center
@@ -500,8 +499,8 @@ extension ARFurnitureViewController :VirtualObjectSelectionViewControllerDelegat
                     self.setNewVirtualObjectPosition(lastFocusSquarePos)
                    
                     UIView.animate(withDuration: 0.5, animations: {
-                        self.deleteButton.transform = CGAffineTransform(translationX: 0, y: -150)
-                        self.captureButton.transform = CGAffineTransform(translationX: 0, y: -150)
+                        self.deleteButton.isHidden = false
+                        self.captureButton.isHidden = false
                      //   self.addObjectButton.isHidden = true
                     })
                    
@@ -522,7 +521,7 @@ extension ARFurnitureViewController :ARSCNViewDelegate {
         refreshFeaturePoints()
         
         DispatchQueue.main.async {
-            self.updateFocusSquare()
+          //  self.updateFocusSquare()
             // If light estimation is enabled, update the intensity of the model's lights and the environment map
             if let lightEstimate = self.session.currentFrame?.lightEstimate {
                 self.sceneView.enableEnvironmentMapWithIntensity(lightEstimate.ambientIntensity / 40)
@@ -696,7 +695,7 @@ extension ARFurnitureViewController {
         
         object.scale = SCNVector3(0.1,0.1,0.1)
         object.runAction(SCNAction.scale(to: 1, duration: 0.2))
-        virtualObject = object
+       
         
         if object.parent == nil {
             sceneView.scene.rootNode.addChildNode(object)
@@ -784,4 +783,15 @@ extension ARFurnitureViewController {
             SCNTransaction.commit()
         }
     }
+}
+
+extension ARFurnitureViewController:GestureDelegate {
+    func updateSelectedStatus(_ status: Bool) {
+        deleteButton.isHidden = !status
+    }
+
+
+
+
+
 }
