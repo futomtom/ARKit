@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 
+@available(iOS 11, *)
 class Plane: SCNNode {
 
 	var anchor: ARPlaneAnchor
@@ -19,21 +20,22 @@ class Plane: SCNNode {
 
 		self.showDebugVisualization(showDebugVisualization)
 
-		if UserDefaults.standard.bool(for: .useOcclusionPlanes) {
-			createOcclusionNode()
-		}
 	}
 
 	required init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
 
-	func update(_ anchor: ARPlaneAnchor) {
+	func update(_ anchor: ARPlaneAnchor, _ show: Bool) {
 		self.anchor = anchor
-		debugVisualization?.update(anchor)
-		if UserDefaults.standard.bool(for: .useOcclusionPlanes) {
-			updateOcclusionNode()
-		}
+        if !show {
+            debugVisualization?.isHidden = true
+        } else {
+            debugVisualization?.isHidden = false
+            debugVisualization?.update(anchor)
+        }
+		
+	
 	}
 
 	func showDebugVisualization(_ show: Bool) {
@@ -52,16 +54,7 @@ class Plane: SCNNode {
 		}
 	}
 
-	func updateOcclusionSetting() {
-		if UserDefaults.standard.bool(for: .useOcclusionPlanes) {
-			if occlusionNode == nil {
-				createOcclusionNode()
-			}
-		} else {
-			occlusionNode?.removeFromParentNode()
-			occlusionNode = nil
-		}
-	}
+	
 
 	// MARK: Private
 

@@ -8,7 +8,9 @@
 
 import Foundation
 import os.log
+import SceneKit
 
+@available(iOS 11, *)
 class VirtualObjectsManager {
 
 	static let shared = VirtualObjectsManager()
@@ -35,6 +37,21 @@ class VirtualObjectsManager {
 		virtualObjectSelected = nil
 		virtualObjects = []
 	}
+
+    func getHitObject(_ node:SCNNode) ->VirtualObject? {
+        var selectObj:VirtualObject?
+        for obj in virtualObjects {
+            if obj.childNodes.contains(node) {
+                selectObj = obj
+                print("Hi")
+                selectObj!.addCirclePlane()
+            } else {
+                print("oh")
+                obj.removeCirclePlane()
+            }
+        }
+         return selectObj
+    }
 
 	func removeVirtualObject(virtualObject: VirtualObject) {
 		if let index = virtualObjects.index(where: { $0.id == virtualObject.id }) {

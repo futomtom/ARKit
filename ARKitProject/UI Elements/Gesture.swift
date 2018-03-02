@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 
+@available(iOS 11, *)
 class Gesture {
 
 	enum TouchEventType {
@@ -94,6 +95,7 @@ class Gesture {
 	}
 }
 
+@available(iOS 11, *)
 class SingleFingerGesture: Gesture {
 
 	var initialTouchLocation = CGPoint()
@@ -118,15 +120,16 @@ class SingleFingerGesture: Gesture {
 		var hitTestOptions = [SCNHitTestOption: Any]()
 		hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
 		let results: [SCNHitTestResult] = sceneView.hitTest(initialTouchLocation, options: hitTestOptions)
-		for result in results {
-			if VirtualObject.isNodePartOfVirtualObject(result.node) {
-				firstTouchWasOnObject = true
-                virtualObject.addCirclePlane()
-				break
+
+        if results.first != nil {
+            let selectedVirtualObject = VirtualObjectsManager.shared.getHitObject((results.first?.node)!)
+            if selectedVirtualObject != nil {
+                firstTouchWasOnObject = true
             } else {
-                virtualObject.removeCirclePlane()
+                firstTouchWasOnObject = false
             }
-		}
+
+        }
 	}
 
 	func updateGesture() {
@@ -147,9 +150,10 @@ class SingleFingerGesture: Gesture {
 
 		// A single finger drag will occur if the drag started on the object and the threshold has been passed.
 		if translationThresholdPassed && firstTouchWasOnObject {
-
+             print(#function)
+            print("firstTouchWasOnObject")
 			let offsetPos = latestTouchLocation - dragOffset
-
+           
 			virtualObject.translateBasedOnScreenPos(offsetPos, instantly:false, infinitePlane:true)
 			hasMovedObject = true
 		}
@@ -157,44 +161,6 @@ class SingleFingerGesture: Gesture {
 
 	func finishGesture() {
 
-		// Single finger touch allows teleporting the object or interacting with it.
-
-		// Do not do anything if this gesture is being finished because
-		// another finger has started touching the screen.
-		if currentTouches.count > 1 {
-			return
-		}
-
-		// Do not do anything either if the touch has dragged the object around.
-		if hasMovedObject {
-			return
-		}
-
-		// If this gesture hasn't moved the object then perform a hit test against
-		// the geometry to check if the user has tapped the object itself.
-		var objectHit = false
-		var hitTestOptions = [SCNHitTestOption: Any]()
-		hitTestOptions[SCNHitTestOption.boundingBoxOnly] = true
-		let results: [SCNHitTestResult] = sceneView.hitTest(latestTouchLocation, options: hitTestOptions)
-
-		// The user has touched the virtual object.
-		for result in results {
-			if VirtualObject.isNodePartOfVirtualObject(result.node) {
-				objectHit = true
-			}
-		}
-
-		// In general, if this tap has hit the object itself then the object should
-		// not be repositioned. However, if the object covers a significant
-		// percentage of the screen then we should interpret the tap as repositioning
-		// the object.
-		if !objectHit || approxScreenSpaceCoveredByTheObject() > 0.5 {
-			// Teleport the object to whereever the user touched the screen - as long as the
-			// drag threshold has not been reached.
-			if !translationThresholdPassed {
-				virtualObject.translateBasedOnScreenPos(latestTouchLocation, instantly:true, infinitePlane:false)
-			}
-		}
 	}
 
 	func approxScreenSpaceCoveredByTheObject() -> Float {
@@ -243,6 +209,7 @@ class SingleFingerGesture: Gesture {
 	}
 }
 
+@available(iOS 11, *)
 class TwoFingerGesture: Gesture {
 
 	var firstTouch = UITouch()
@@ -330,7 +297,7 @@ class TwoFingerGesture: Gesture {
 		allowRotation = firstTouchWasOnObject
 		// Allow scale if the fingers are on the object or if the object
 		// is scaled very small, and if the scale gesture has been enabled in Settings.
-		let scaleGestureEnabled = UserDefaults.standard.bool(for: .scaleWithPinchGesture)
+		let scaleGestureEnabled = false
 		allowScaling = scaleGestureEnabled && (firstTouchWasOnObject || objectBaseScale < 0.1)
 
 		let loc2ToLoc1 = loc1 - loc2

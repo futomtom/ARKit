@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 
+@available(iOS 11, *)
 class FocusSquare: SCNNode {
 
 	// Original size of the focus square in m.
@@ -19,8 +20,8 @@ class FocusSquare: SCNNode {
 	private let animationDuration = 0.7
 
 	// Color of the focus square
-    private let focusSquareColor = #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1) // base yellow
-	private let focusSquareColorLight = #colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1) // light yellow
+    private let focusSquareColor = UIColor.clear// #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1) // base yellow
+	private let focusSquareColorLight =  UIColor.clear //#colorLiteral(red: 0.9411764741, green: 0.4980392158, blue: 0.3529411852, alpha: 1) // light yellow
 
     // For scale adapdation based on the camera distance, see the `scaleBasedOnDistance(camera:)` method.
 	/////////////////////////////////////////////////
@@ -184,6 +185,7 @@ class FocusSquare: SCNNode {
 	}
 
 	private func close(flash: Bool = false) {
+        
 		if !isOpen || isAnimating {
 			return
 		}
@@ -215,28 +217,28 @@ class FocusSquare: SCNNode {
 		SCNTransaction.commit()
 
 		// Scale/bounce animation
-		entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.x"), forKey: "transform.scale.x")
-		entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.y"), forKey: "transform.scale.y")
-		entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.z"), forKey: "transform.scale.z")
+//        entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.x"), forKey: "transform.scale.x")
+//        entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.y"), forKey: "transform.scale.y")
+//        entireSquare?.addAnimation(scaleAnimation(for: "transform.scale.z"), forKey: "transform.scale.z")
 
 		// Flash
-		if flash {
-			let waitAction = SCNAction.wait(duration: animationDuration * 0.75)
-			let fadeInAction = SCNAction.fadeOpacity(to: 0.25, duration: animationDuration * 0.125)
-			let fadeOutAction = SCNAction.fadeOpacity(to: 0.0, duration: animationDuration * 0.125)
-			fillPlane?.runAction(SCNAction.sequence([waitAction, fadeInAction, fadeOutAction]))
-
-			let flashSquareAction = flashAnimation(duration: animationDuration * 0.25)
-			segments?[0].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[1].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[2].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[3].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[4].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[5].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[6].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-			segments?[7].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
-
-		}
+//        if flash {
+//            let waitAction = SCNAction.wait(duration: animationDuration * 0.75)
+//            let fadeInAction = SCNAction.fadeOpacity(to: 0.25, duration: animationDuration * 0.125)
+//            let fadeOutAction = SCNAction.fadeOpacity(to: 0.0, duration: animationDuration * 0.125)
+//            fillPlane?.runAction(SCNAction.sequence([waitAction, fadeInAction, fadeOutAction]))
+//
+//            let flashSquareAction = flashAnimation(duration: animationDuration * 0.25)
+//            segments?[0].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[1].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[2].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[3].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[4].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[5].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[6].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//            segments?[7].runAction(SCNAction.sequence([waitAction, flashSquareAction]))
+//
+//        }
 
 		isOpen = false
 	}

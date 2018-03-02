@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 
+@available(iOS 11, *)
 extension ARCamera.TrackingState {
 	var presentationString: String {
 		switch self {

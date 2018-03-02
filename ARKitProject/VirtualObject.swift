@@ -2,6 +2,7 @@ import Foundation
 import SceneKit
 import ARKit
 
+@available(iOS 11, *)
 class VirtualObject: SCNNode {
 	static let ROOT_NAME = "Virtual object root node"
 	var fileExtension: String = ""
@@ -12,7 +13,7 @@ class VirtualObject: SCNNode {
 	var id: Int!
     var circlePlaneNode:SCNNode?
 
-	var viewController: MainViewController?
+	var viewController: ARFurnitureViewController?
 
 	override init() {
 		super.init()
@@ -35,8 +36,14 @@ class VirtualObject: SCNNode {
     
     func addCirclePlane() {
         if circlePlaneNode == nil {
-            let plane = SCNPlane(width: 1 , height: 1)
-            plane.firstMaterial?.diffuse.contents = UIImage(named: "circle")
+            let minVec = self.boundingBox.min
+            let maxVec = self.boundingBox.max
+            let xSize = maxVec.x - minVec.x
+            let ySize = maxVec.y - minVec.y
+            let radius = CGFloat(fmax(xSize, ySize))
+            
+            let plane = SCNPlane(width: radius , height: radius)
+            plane.firstMaterial?.diffuse.contents = UIImage(named: "Models.scnassets/circle.png")
             plane.firstMaterial?.isDoubleSided = true
             circlePlaneNode = SCNNode(geometry: plane)
             circlePlaneNode?.rotation = SCNVector4(1.0, 0.0, 0.0, -Float.pi * 0.5)
@@ -84,9 +91,11 @@ class VirtualObject: SCNNode {
 	}
 }
 
+@available(iOS 11, *)
 extension VirtualObject {
 
 	static func isNodePartOfVirtualObject(_ node: SCNNode) -> Bool {
+        print(node.name)
 		if node.name == VirtualObject.ROOT_NAME {
 			return true
 		}

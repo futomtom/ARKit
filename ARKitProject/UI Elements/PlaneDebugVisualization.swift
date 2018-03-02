@@ -1,6 +1,7 @@
 import Foundation
 import ARKit
 
+@available(iOS 11, *)
 class PlaneDebugVisualization: SCNNode {
 
 	var planeAnchor: ARPlaneAnchor
@@ -12,7 +13,7 @@ class PlaneDebugVisualization: SCNNode {
 
 		self.planeAnchor = anchor
 
-        let grid = UIImage(named: "Dots")
+        let grid = UIImage(named: "Models.scnassets/dots.png")
 		self.planeGeometry = createPlane(size: CGSize(width: CGFloat(anchor.extent.x), height: CGFloat(anchor.extent.z)),
 		                                 contents: grid)
 		self.planeNode = SCNNode(geometry: planeGeometry)

@@ -2,8 +2,9 @@ import ARKit
 import Foundation
 import SceneKit
 
+@available(iOS 11, *)
 extension ARSCNView {
-	func setUp(viewController: MainViewController, session: ARSession) {
+	func setUp(viewController: ARFurnitureViewController, session: ARSession) {
 		delegate = viewController
 		self.session = session
 		antialiasingMode = .multisampling4X
