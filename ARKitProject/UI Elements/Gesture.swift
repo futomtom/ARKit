@@ -1,10 +1,7 @@
 import Foundation
 import ARKit
 
-protocol GestureDelegate:class {
-    func updateSelectedStatus(_ status:Bool,_ obj:VirtualObject?)
 
-}
 
 @available(iOS 11, *)
 class Gesture {
@@ -19,7 +16,7 @@ class Gesture {
 	var currentTouches = Set<UITouch>()
 	let sceneView: ARSCNView
 	let virtualObject: VirtualObject
-    weak var delegate:GestureDelegate?
+  
 
 	var refreshTimer: Timer?
 
@@ -136,19 +133,28 @@ class SingleFingerGesture: Gesture {
 //                }
 //            } while (node != nil)
 //        }
-
+        let notiName = Notification.Name(rawValue: "ARTouch")
         if results.first != nil {
             let selectedVirtualObject = VirtualObjectsManager.shared.getHitObject((results.first?.node)!)
+           
             if selectedVirtualObject != nil {
                 firstTouchWasOnObject = true
-                delegate?.updateSelectedStatus(true, selectedVirtualObject!)
+                let usrInfo = ["object": selectedVirtualObject]
+                NotificationCenter.default.post(name: notiName, object: nil, userInfo: usrInfo)
+                
             } else {
                 firstTouchWasOnObject = false
-                delegate?.updateSelectedStatus(false, nil)
+                NotificationCenter.default.post(name: notiName, object: nil, userInfo: nil)
+               
             }
         } else {
             print("no hit")
-            VirtualObjectsManager.shared.unselectObject() 
+            let objects = VirtualObjectsManager.shared.getVirtualObjects()
+            objects.map { $0.removeCirclePlane()}
+            if objects.count > 0 {
+                NotificationCenter.default.post(name: notiName, object: nil, userInfo: nil)
+                
+            }
         }
 	}
 

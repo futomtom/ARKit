@@ -48,6 +48,7 @@ class VirtualObjectsManager {
                 obj.addCirclePlane()
                 virtualObjectSelected = obj
             } else {
+                print("removeCirclePlane")
                  obj.removeCirclePlane()
             }
         }
@@ -58,7 +59,6 @@ class VirtualObjectsManager {
         for obj in virtualObjects {
                 obj.removeCirclePlane()
             }
-        virtualObjectSelected = nil 
     }
 
 	func removeVirtualObject(virtualObject: VirtualObject) {

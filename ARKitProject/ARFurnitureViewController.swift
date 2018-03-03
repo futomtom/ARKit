@@ -40,6 +40,9 @@ class InfoView:UIView {
         blurView.contentView.addSubview(label)
         addSubview(blurView)
         
+        
+      
+        
 //        label.snp.makeConstraints { (make) in
 //            make.width.height.equalTo(blurView)
 //            make.center.equalTo(blurView)
@@ -97,6 +100,20 @@ class ARFurnitureViewController: UIViewController {
     @IBOutlet weak var captureButton: UIButton!
     @IBOutlet var sceneView: ARSCNView!
     
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name(rawValue: "ARTouch"), object: nil)
+    }
+    
+    @objc func updateSelectedStatus(notification: Notification) {
+        guard let obj = notification.userInfo?["object"] as? VirtualObject else {
+            deleteButton.isHidden = true
+            return
+        }
+        focusedObject = obj
+        deleteButton.isHidden = false
+    }
+    
     // MARK: - Ambient Light Estimation
     func toggleAmbientLightEstimation(_ enabled: Bool) {
         if enabled {
@@ -133,6 +150,7 @@ class ARFurnitureViewController: UIViewController {
         setupScene()
         setupFocusSquare()
         resetVirtualObject()
+         NotificationCenter.default.addObserver(self, selector: #selector(updateSelectedStatus(notification:)), name: Notification.Name(rawValue: "ARTouch"), object: nil)
         
     }
     
@@ -337,8 +355,8 @@ class ARFurnitureViewController: UIViewController {
         
          DispatchQueue.main.async {
         UIView.animate(withDuration: 0.5, animations: {
-            self.deleteButton.isHidden = true
-            self.captureButton.isHidden = true
+           
+         
             self.addObjectButton.isHidden = false
         })
         }
@@ -369,7 +387,7 @@ class ARFurnitureViewController: UIViewController {
         } else {
             currentGesture = currentGesture!.updateGestureFromTouches(touches, .touchBegan)
         }
-        currentGesture?.delegate = self
+       
 
         
         displayVirtualObjectTransform()
@@ -502,7 +520,6 @@ extension ARFurnitureViewController :VirtualObjectSelectionViewControllerDelegat
                     self.setNewVirtualObjectPosition(lastFocusSquarePos)
                    
                     UIView.animate(withDuration: 0.5, animations: {
-                        self.deleteButton.isHidden = false
                         self.captureButton.isHidden = false
                      //   self.addObjectButton.isHidden = true
                     })
@@ -788,9 +805,4 @@ extension ARFurnitureViewController {
     }
 }
 
-extension ARFurnitureViewController:GestureDelegate {
-    func updateSelectedStatus(_ status: Bool,_ obj:VirtualObject? ) {
-        focusedObject = obj
-        deleteButton.isHidden = !status
-    }
-}
+
