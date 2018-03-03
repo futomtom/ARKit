@@ -90,6 +90,7 @@ class ARFurnitureViewController: UIViewController {
     
     let DEFAULT_DISTANCE_CAMERA_TO_OBJECTS = Float(10)
     var virtualObject:VirtualObject?
+    var focusedObject:VirtualObject?
     var infoView:InfoView!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var addObjectButton: UIButton!
@@ -247,21 +248,21 @@ class ARFurnitureViewController: UIViewController {
      //   textManager.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, ARMessageType: .focusSquare)
     }
     
-//    func updateFocusSquare() {
-//        guard let screenCenter = screenCenter else { return }
-//
-//        let selectedObject = VirtualObjectsManager.shared.getVirtualObjectSelected()
-//        if selectedObject != nil && sceneView.isNode(virtualObject!, insideFrustumOf: sceneView.pointOfView!) {
-//            focusSquare?.hide()
-//        } else {
-//            focusSquare?.unhide()
-//        }
-//        let (worldPos, planeAnchor, _) = worldPositionFromScreenPosition(screenCenter, objectPos: focusSquare?.position)
-//        if let worldPos = worldPos {
-//            focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
-//
-//        }
-//    }
+    func updateFocusSquare() {
+        guard let screenCenter = screenCenter else { return }
+
+        let selectedObject = VirtualObjectsManager.shared.getVirtualObjectSelected()
+        if selectedObject != nil && sceneView.isNode(selectedObject!, insideFrustumOf: sceneView.pointOfView!) {
+            focusSquare?.hide()
+        } else {
+            focusSquare?.unhide()
+        }
+        let (worldPos, planeAnchor, _) = worldPositionFromScreenPosition(screenCenter, objectPos: focusSquare?.position)
+        if let worldPos = worldPos {
+            focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
+
+        }
+    }
 
     
     // MARK: - Debug Visualizations
@@ -330,9 +331,9 @@ class ARFurnitureViewController: UIViewController {
    
     
     @IBAction func removeVirtualObject(_ button: UIButton) {
-        guard virtualObject != nil else { return }
-         virtualObject?.removeFromParentNode()
-          virtualObject = nil
+        guard focusedObject != nil else { return }
+         focusedObject?.removeFromParentNode()
+          focusedObject = nil
         
          DispatchQueue.main.async {
         UIView.animate(withDuration: 0.5, animations: {
@@ -368,6 +369,8 @@ class ARFurnitureViewController: UIViewController {
         } else {
             currentGesture = currentGesture!.updateGestureFromTouches(touches, .touchBegan)
         }
+        currentGesture?.delegate = self
+
         
         displayVirtualObjectTransform()
     }
@@ -521,7 +524,7 @@ extension ARFurnitureViewController :ARSCNViewDelegate {
         refreshFeaturePoints()
         
         DispatchQueue.main.async {
-          //  self.updateFocusSquare()
+            self.updateFocusSquare()
             // If light estimation is enabled, update the intensity of the model's lights and the environment map
             if let lightEstimate = self.session.currentFrame?.lightEstimate {
                 self.sceneView.enableEnvironmentMapWithIntensity(lightEstimate.ambientIntensity / 40)
@@ -786,12 +789,8 @@ extension ARFurnitureViewController {
 }
 
 extension ARFurnitureViewController:GestureDelegate {
-    func updateSelectedStatus(_ status: Bool) {
+    func updateSelectedStatus(_ status: Bool,_ obj:VirtualObject? ) {
+        focusedObject = obj
         deleteButton.isHidden = !status
     }
-
-
-
-
-
 }

@@ -2,7 +2,7 @@ import Foundation
 import ARKit
 
 protocol GestureDelegate:class {
-    func updateSelectedStatus(_ status:Bool)
+    func updateSelectedStatus(_ status:Bool,_ obj:VirtualObject?)
 
 }
 
@@ -141,10 +141,10 @@ class SingleFingerGesture: Gesture {
             let selectedVirtualObject = VirtualObjectsManager.shared.getHitObject((results.first?.node)!)
             if selectedVirtualObject != nil {
                 firstTouchWasOnObject = true
-                delegate?.updateSelectedStatus(true)
+                delegate?.updateSelectedStatus(true, selectedVirtualObject!)
             } else {
                 firstTouchWasOnObject = false
-                delegate?.updateSelectedStatus(false)
+                delegate?.updateSelectedStatus(false, nil)
             }
         } else {
             print("no hit")
